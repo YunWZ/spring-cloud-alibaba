@@ -17,6 +17,7 @@
 package com.alibaba.cloud.nacos;
 
 import java.net.Inet4Address;
+import java.net.Inet6Address;
 import java.net.InetAddress;
 import java.net.NetworkInterface;
 import java.util.Enumeration;
@@ -31,6 +32,7 @@ import javax.annotation.PostConstruct;
 
 import com.alibaba.cloud.commons.lang.StringUtils;
 import com.alibaba.cloud.nacos.event.NacosDiscoveryInfoChangedEvent;
+import com.alibaba.cloud.nacos.utils.InetIPv6Util;
 import com.alibaba.nacos.api.naming.NamingService;
 import com.alibaba.nacos.api.naming.PreservedMetadataKeys;
 import com.alibaba.nacos.client.naming.utils.UtilAndComs;
@@ -163,6 +165,13 @@ public class NacosDiscoveryProperties {
 	private String networkInterface = "";
 
 	/**
+	 * choose IPv4 or IPv6,if you don't set it will choose IPv4.
+	 * When IPv6 is chosen but no IPv6 can be found, system will automatically find IPv4 to ensure there is an
+	 * available service address.
+	 */
+	private String ipType = "IPv4";
+
+	/**
 	 * The port your want to register for your service instance, needn't to set it if the
 	 * auto detect port works well.
 	 */
@@ -221,6 +230,9 @@ public class NacosDiscoveryProperties {
 	private boolean failFast = true;
 
 	@Autowired
+	private InetIPv6Util inetIPv6Util;
+
+	@Autowired
 	private InetUtils inetUtils;
 
 	@Autowired
@@ -251,7 +263,20 @@ public class NacosDiscoveryProperties {
 		if (StringUtils.isEmpty(ip)) {
 			// traversing network interfaces if didn't specify a interface
 			if (StringUtils.isEmpty(networkInterface)) {
-				ip = inetUtils.findFirstNonLoopbackHostInfo().getIpAddress();
+				if ("IPv4".equalsIgnoreCase(ipType)) {
+					ip = inetUtils.findFirstNonLoopbackHostInfo().getIpAddress();
+				}
+				else if ("IPv6".equalsIgnoreCase(ipType)) {
+					ip = inetIPv6Util.findIPv6Address();
+					if (StringUtils.isEmpty(ip)) {
+						log.warn("There is no available IPv6 found. Spring Cloud Alibaba will automatically find IPv4.");
+						ip = inetUtils.findFirstNonLoopbackHostInfo().getIpAddress();
+					}
+				}
+				else {
+					throw new IllegalArgumentException(
+							"please checking the type of IP " + ipType);
+				}
 			}
 			else {
 				NetworkInterface netInterface = NetworkInterface
@@ -265,6 +290,7 @@ public class NacosDiscoveryProperties {
 				while (inetAddress.hasMoreElements()) {
 					InetAddress currentAddress = inetAddress.nextElement();
 					if (currentAddress instanceof Inet4Address
+							|| currentAddress instanceof Inet6Address
 							&& !currentAddress.isLoopbackAddress()) {
 						ip = currentAddress.getHostAddress();
 						break;
@@ -362,6 +388,14 @@ public class NacosDiscoveryProperties {
 
 	public void setIp(String ip) {
 		this.ip = ip;
+	}
+
+	public String getIpType() {
+		return ipType;
+	}
+
+	public void setIpType(String ipType) {
+		this.ipType = ipType;
 	}
 
 	public String getNetworkInterface() {

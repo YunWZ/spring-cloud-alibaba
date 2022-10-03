@@ -198,6 +198,7 @@ server address|spring.cloud.nacos.discovery.server-addr||
 service|spring.cloud.nacos.discovery.service|${spring.application.name}|service id to registry
 weight|spring.cloud.nacos.discovery.weight|1|value from 1 to 100, The larger the value, the larger the weight
 ip|spring.cloud.nacos.discovery.ip||ip address to registry, Highest priority
+ip type|spring.cloud.nacos.discovery.ip-type|IPv4|IPv4 and IPv6 can be configured, If there are multiple IP addresses of the same type of network card, and you want to specify a specific network segment address, you can use `spring.cloud.inetutils.preferred-networks` to configure the filter address.
 network interface|spring.cloud.nacos.discovery.network-interface||When the IP is not configured, the registered IP address is the IP address corresponding to the network-interface. If this item is not configured, the address of the first network-interface is taken by default.
 port|spring.cloud.nacos.discovery.port|-1|port to registry, Automatically detect without configuration
 namesapce|spring.cloud.nacos.discovery.namespace||One of the common scenarios is the separation of the configuration of different environments, such as the development of the test environment and the resource isolation of the production environment.
@@ -205,8 +206,10 @@ AccessKey|spring.cloud.nacos.discovery.access-key||
 SecretKey|spring.cloud.nacos.discovery.secret-key||
 Metadata|spring.cloud.nacos.discovery.metadata||Extended data, Configure using Map format
 log name|spring.cloud.nacos.discovery.log-name||
+cluster|spring.cloud.nacos.discovery.cluster-name|DEFAULT|Nacos cluster name
 endpoint|spring.cloud.nacos.discovery.endpoint||The domain name of a service, through which the server address can be dynamically obtained.
-Integration Ribbon|ribbon.nacos.enabled|true|
+Integration LoadBalancer|spring.cloud.loadbalancer.nacos.enabled|false|
+enable Nacos Watch|spring.cloud.nacos.discovery.watch.enabled|true|Switch it to false to disable nacos watch
 enabled|spring.cloud.nacos.discovery.enabled|true|The switch to enable or disable nacos service discovery
 
 
