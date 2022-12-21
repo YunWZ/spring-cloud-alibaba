@@ -14,30 +14,32 @@
  * limitations under the License.
  */
 
-package com.alibaba.cloud.seata.feign;
+package com.alibaba.cloud.nacos.discovery;
 
-import feign.Client;
+import com.alibaba.cloud.nacos.NacosDiscoveryProperties;
 
+import org.springframework.boot.autoconfigure.AutoConfigureAfter;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.cloud.netflix.zuul.ZuulProxyMarkerConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 /**
- * @author xiaojing
- * @author wang.liang
+ * @author ruansheng
  */
 @Configuration(proxyBeanMethods = false)
-@ConditionalOnClass(Client.class)
-public class SeataFeignClientAutoConfiguration {
+@ConditionalOnClass(ZuulProxyMarkerConfiguration.class)
+@AutoConfigureAfter(ZuulProxyMarkerConfiguration.class)
+public class ZuulGatewayLocatorAutoConfiguration {
 
 	@Bean
-	public static SeataFeignBuilderBeanPostProcessor seataFeignBuilderBeanPostProcessor() {
-		return new SeataFeignBuilderBeanPostProcessor();
-	}
-
-	@Bean
-	public SeataFeignRequestInterceptor seataFeignRequestInterceptor() {
-		return new SeataFeignRequestInterceptor();
+	@ConditionalOnMissingBean
+	@ConditionalOnBean(name = "zuulProxyMarkerBean")
+	public GatewayLocatorHeartBeatPublisher gatewayLocatorHeartBeatPublisher(
+			NacosDiscoveryProperties nacosDiscoveryProperties) {
+		return new GatewayLocatorHeartBeatPublisher(nacosDiscoveryProperties);
 	}
 
 }

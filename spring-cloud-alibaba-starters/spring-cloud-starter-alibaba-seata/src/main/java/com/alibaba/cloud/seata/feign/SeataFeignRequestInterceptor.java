@@ -14,26 +14,31 @@
  * limitations under the License.
  */
 
-package com.alibaba.cloud.examples;
+package com.alibaba.cloud.seata.feign;
 
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RestController;
+import java.util.ArrayList;
+import java.util.List;
+
+import feign.RequestInterceptor;
+import feign.RequestTemplate;
+import io.seata.core.context.RootContext;
+
+import org.springframework.util.StringUtils;
 
 /**
- * Provide the interface method of config.
- *
- * @author MieAh
+ * @author wang.liang
  */
-@RestController
-public class GetConfigController {
+public class SeataFeignRequestInterceptor implements RequestInterceptor {
 
-	@Value("${config}")
-	private String config;
+	@Override
+	public void apply(RequestTemplate template) {
+		String xid = RootContext.getXID();
+		if (StringUtils.isEmpty(xid)) {
+			return;
+		}
 
-	@GetMapping("/config")
-	public String getConfig() {
-		return config;
+		List<String> seataXid = new ArrayList<>();
+		seataXid.add(xid);
+		template.header(RootContext.KEY_XID, xid);
 	}
-
 }

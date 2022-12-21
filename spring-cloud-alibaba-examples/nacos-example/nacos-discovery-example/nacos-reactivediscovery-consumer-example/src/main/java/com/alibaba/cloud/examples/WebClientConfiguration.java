@@ -14,22 +14,23 @@
  * limitations under the License.
  */
 
-package com.alibaba.cloud.seata.feign;
+package com.alibaba.cloud.examples;
 
-import feign.Feign;
-
-import org.springframework.beans.factory.BeanFactory;
+import org.springframework.cloud.client.loadbalancer.LoadBalanced;
+import org.springframework.context.annotation.Bean;
+import org.springframework.web.reactive.function.client.WebClient;
 
 /**
- * @author xiaojing
+ * Configuration for web client.
+ *
+ * @author fangjian0423, MieAh
  */
-final class SeataFeignBuilder {
+public class WebClientConfiguration {
 
-	private SeataFeignBuilder() {
-	}
-
-	static Feign.Builder builder(BeanFactory beanFactory) {
-		return Feign.builder().client(new SeataFeignClient(beanFactory));
+	@Bean
+	@LoadBalanced
+	public WebClient.Builder webClient() {
+		return WebClient.builder();
 	}
 
 }

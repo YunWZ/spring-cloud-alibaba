@@ -14,25 +14,29 @@
  * limitations under the License.
  */
 
-package com.alibaba.cloud.seata.feign;
+package com.alibaba.cloud.examples.configuration;
 
-import feign.Feign;
-import feign.Retryer;
-import feign.hystrix.HystrixFeign;
-
-import org.springframework.beans.factory.BeanFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
- * @author xiaojing
+ * Change the request path containing echo.
+ *
+ * @author fangjian0423, MieAh
  */
-final class SeataHystrixFeignBuilder {
+public class UrlCleaner {
 
-	private SeataHystrixFeignBuilder() {
-	}
+	private static final Logger LOGGER = LoggerFactory.getLogger(UrlCleaner.class);
 
-	static Feign.Builder builder(BeanFactory beanFactory) {
-		return HystrixFeign.builder().retryer(Retryer.NEVER_RETRY)
-				.client(new SeataFeignClient(beanFactory));
+	private static final String URL_CLEAN_ECHO = ".*/echo/.*";
+
+	public static String clean(String url) {
+		LOGGER.info("enter urlCleaner");
+		if (url.matches(URL_CLEAN_ECHO)) {
+			LOGGER.info("change url");
+			url = url.replaceAll("/echo/.*", "/echo/{str}");
+		}
+		return url;
 	}
 
 }

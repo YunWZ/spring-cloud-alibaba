@@ -14,25 +14,31 @@
  * limitations under the License.
  */
 
-package com.alibaba.cloud.seata.feign;
+package com.alibaba.cloud.examples.feign;
 
-import com.alibaba.cloud.sentinel.feign.SentinelFeign;
-import feign.Feign;
-import feign.Retryer;
-
-import org.springframework.beans.factory.BeanFactory;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestParam;
 
 /**
- * @author xiaojing
+ * When the service is blown, the fallback operation is performed.
+ *
+ * @author fangjian0423, MieAh
  */
-final class SeataSentinelFeignBuilder {
+public class EchoClientFallback implements EchoClient {
 
-	private SeataSentinelFeignBuilder() {
+	@Override
+	public String echo(@PathVariable("str") String str) {
+		return "echo fallback";
 	}
 
-	static Feign.Builder builder(BeanFactory beanFactory) {
-		return SentinelFeign.builder().retryer(Retryer.NEVER_RETRY)
-				.client(new SeataFeignClient(beanFactory));
+	@Override
+	public String divide(@RequestParam Integer a, @RequestParam Integer b) {
+		return "divide fallback";
+	}
+
+	@Override
+	public String notFound() {
+		return "notFound fallback";
 	}
 
 }

@@ -14,17 +14,23 @@
  * limitations under the License.
  */
 
-package com.alibaba.cloud.examples;
+package com.alibaba.cloud.examples.config;
 
-public class UrlCleaner {
+import com.alibaba.cloud.examples.feign.EchoClient;
+import com.alibaba.cloud.examples.feign.EchoClientFallback;
 
-	public static String clean(String url) {
-		System.out.println("enter urlCleaner");
-		if (url.matches(".*/echo/.*")) {
-			System.out.println("change url");
-			url = url.replaceAll("/echo/.*", "/echo/{str}");
-		}
-		return url;
+import org.springframework.context.annotation.Bean;
+
+/**
+ * Configuration for Feign.
+ *
+ * @author fangjian0423, MieAh
+ */
+public class FeignConfiguration {
+
+	@Bean
+	public EchoClient echoClientFallback() {
+		return new EchoClientFallback();
 	}
 
 }

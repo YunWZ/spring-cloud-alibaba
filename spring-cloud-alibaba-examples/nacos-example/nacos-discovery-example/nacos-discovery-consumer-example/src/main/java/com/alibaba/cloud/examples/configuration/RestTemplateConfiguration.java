@@ -14,30 +14,35 @@
  * limitations under the License.
  */
 
-package com.alibaba.cloud.seata.feign;
+package com.alibaba.cloud.examples.configuration;
 
-import feign.Client;
+import com.alibaba.cloud.sentinel.annotation.SentinelRestTemplate;
 
-import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
+import org.springframework.cloud.client.loadbalancer.LoadBalanced;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.web.client.RestTemplate;
 
 /**
- * @author xiaojing
- * @author wang.liang
+ * Load balancing and sentinel configuration for RestTemplate.
+ *
+ * @author fangjian0423, MieAh
  */
-@Configuration(proxyBeanMethods = false)
-@ConditionalOnClass(Client.class)
-public class SeataFeignClientAutoConfiguration {
+@Configuration
+public class RestTemplateConfiguration {
 
+	@LoadBalanced
 	@Bean
-	public static SeataFeignBuilderBeanPostProcessor seataFeignBuilderBeanPostProcessor() {
-		return new SeataFeignBuilderBeanPostProcessor();
+	@SentinelRestTemplate(urlCleanerClass = UrlCleaner.class, urlCleaner = "clean")
+	public RestTemplate urlCleanedRestTemplate() {
+		return new RestTemplate();
 	}
 
+	@LoadBalanced
 	@Bean
-	public SeataFeignRequestInterceptor seataFeignRequestInterceptor() {
-		return new SeataFeignRequestInterceptor();
+	@SentinelRestTemplate
+	public RestTemplate restTemplate() {
+		return new RestTemplate();
 	}
 
 }
