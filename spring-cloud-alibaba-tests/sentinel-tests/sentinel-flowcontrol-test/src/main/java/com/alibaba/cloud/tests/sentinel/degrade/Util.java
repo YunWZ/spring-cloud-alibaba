@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2018 the original author or authors.
+ * Copyright 2013-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,17 +14,24 @@
  * limitations under the License.
  */
 
-package com.alibaba.cloud.examples;
+package com.alibaba.cloud.tests.sentinel.degrade;
 
-public class UrlCleaner {
+/**
+ * @author Freeman
+ */
+public final class Util {
 
-	public static String clean(String url) {
-		System.out.println("enter urlCleaner");
-		if (url.matches(".*/echo/.*")) {
-			System.out.println("change url");
-			url = url.replaceAll("/echo/.*", "/echo/{str}");
-		}
-		return url;
+	private Util() {
+		throw new AssertionError("No Util instances for you!");
 	}
+
+	/**
+	 * Flow control not triggered.
+	 */
+	public static final String FLOW_CONTROL_NOT_TRIGGERED = "/flowControlNotTriggered";
+	/**
+	 * Flow control triggered.
+	 */
+	public static final String FLOW_CONTROL_TRIGGERED = "/flowControlTriggered";
 
 }
